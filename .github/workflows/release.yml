@@ -5,6 +5,9 @@ on:
     tags: ['v*']
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build-windows:
     runs-on: windows-latest
@@ -22,19 +25,23 @@ jobs:
       - name: Build EXE
         run: pyinstaller pdf2word.spec --noconfirm --clean
 
+      - name: List dist
+        run: ls dist/
+
       - name: Install NSIS
         run: choco install nsis -y --no-progress
 
       - name: Build NSIS installer
+        shell: cmd
         run: |
-          & "C:\Program Files (x86)\NSIS\makensis.exe" scripts/installer.nsi
+          "C:\Program Files (x86)\NSIS\makensis.exe" scripts/installer.nsi
 
       - name: Upload EXE (portable)
         uses: softprops/action-gh-release@v2
         with:
           files: dist/pdf2word.exe
 
-      - name: Upload installer
+      - name: Upload NSIS installer
         uses: softprops/action-gh-release@v2
         with:
           files: dist/pdf2word-setup.exe
@@ -56,7 +63,7 @@ jobs:
         run: pyinstaller pdf2word.spec --noconfirm --clean
 
       - name: Cleanup build cache
-        run: rm -rf build pdf2word.spec.bak
+        run: rm -rf build
 
       - name: Create DMG
         run: |
