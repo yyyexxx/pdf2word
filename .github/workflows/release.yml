@@ -26,7 +26,8 @@ jobs:
         run: choco install nsis -y --no-progress
 
       - name: Build NSIS installer
-        run: makensis scripts/installer.nsi
+        run: |
+          & "C:\Program Files (x86)\NSIS\makensis.exe" scripts/installer.nsi
 
       - name: Upload EXE (portable)
         uses: softprops/action-gh-release@v2
@@ -54,6 +55,9 @@ jobs:
       - name: Build app
         run: pyinstaller pdf2word.spec --noconfirm --clean
 
+      - name: Cleanup build cache
+        run: rm -rf build pdf2word.spec.bak
+
       - name: Create DMG
         run: |
           mkdir -p dist/dmg
@@ -62,6 +66,7 @@ jobs:
           hdiutil create -volname "PDF转WORD" \
             -srcfolder dist/dmg \
             -ov -format UDZO \
+            -size 200m \
             dist/PDF转WORD转换器.dmg
 
       - name: Upload DMG
