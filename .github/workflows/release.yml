@@ -25,26 +25,10 @@ jobs:
       - name: Build EXE
         run: pyinstaller pdf2word.spec --noconfirm --clean
 
-      - name: List dist
-        run: ls dist/
-
-      - name: Install NSIS
-        run: choco install nsis -y --no-progress
-
-      - name: Build NSIS installer
-        shell: cmd
-        run: |
-          "C:\Program Files (x86)\NSIS\makensis.exe" scripts/installer.nsi
-
-      - name: Upload EXE (portable)
+      - name: Upload EXE
         uses: softprops/action-gh-release@v2
         with:
           files: dist/pdf2word.exe
-
-      - name: Upload NSIS installer
-        uses: softprops/action-gh-release@v2
-        with:
-          files: dist/pdf2word-setup.exe
 
   build-macos:
     runs-on: macos-latest
